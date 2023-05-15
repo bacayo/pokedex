@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import pokemonReducer from "../redux/slices/pokemonSlice";
 import pokemonTypeReducer from "../redux/slices/pokemonTypeSlice";
+import pokemonDetailReducer from "../redux/slices/pokemonDetailSlice";
 
 const store = configureStore({
   reducer: {
     pokemon: pokemonReducer,
     pokemonType: pokemonTypeReducer,
+    pokemonDetail: pokemonDetailReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

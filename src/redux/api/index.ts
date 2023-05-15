@@ -5,17 +5,6 @@ import { PokemonType, Pokemon } from "@/types/types";
 axios.defaults.baseURL = "https://pokeapi.co/api/v2/";
 
 // Get all Pokemon list
-
-const fetchPokemonData = (pokemon: any) => {
-  let url = pokemon.url;
-  fetch(url)
-    .then((res) => res.json())
-    .then((pokeData) => {
-      console.log(pokeData);
-      return pokeData;
-    });
-};
-
 export const getPokemonAsync = createAsyncThunk<Pokemon[]>(
   "pokemon/getPokemonAsync",
   async () => {
@@ -37,5 +26,17 @@ export const getPokemonTypesAsync = createAsyncThunk<PokemonType[]>(
   async () => {
     const res = await axios.get("type");
     return res.data.results;
+  }
+);
+
+type PokemonDetailType = {
+  name: string | string[] | undefined;
+};
+
+export const getPokemonDetailAsync = createAsyncThunk<Pokemon, string>(
+  "pokemonDetailSlice/getPokemonDetailAsync",
+  async (name: string) => {
+    const response = await axios.get(`pokemon/${name}`);
+    return response.data;
   }
 );

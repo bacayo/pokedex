@@ -9,6 +9,7 @@ import {
   Select,
   Paper,
   SelectChangeEvent,
+  Typography,
 } from "@mui/material";
 
 import React, { useEffect, useState } from "react";
@@ -20,12 +21,6 @@ import { getPokemonAsync, getPokemonTypesAsync } from "@/redux/api";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
 import { RootState } from "@/redux/store";
 
-interface Pokemon {
-  id: number;
-  name: string;
-  types: { type: { name: string } }[];
-}
-
 const Home = () => {
   const theme = useTheme();
 
@@ -35,7 +30,8 @@ const Home = () => {
     (state: RootState) => state.pokemonType
   );
 
-  const [type, setType] = useState("");
+  const [type, setType] = useState("All");
+  const [searchPokemon, setSearchPokemon] = useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     setType(event.target.value as string);
@@ -62,6 +58,8 @@ const Home = () => {
               width: 300,
               marginX: 2,
             }}
+            value={searchPokemon}
+            onChange={(e) => setSearchPokemon(e.target.value)}
             id="pokemon-name"
             label="Name"
             variant="outlined"
@@ -72,19 +70,21 @@ const Home = () => {
               width: 200,
             }}
           >
-            <InputLabel>Age</InputLabel>
+            <InputLabel>Type</InputLabel>
             <Select value={type} onChange={handleChange}>
               <MenuItem value="All">--All--</MenuItem>
               {pokemonType?.map((item, index) => (
                 <MenuItem value={item.name} key={index}>
-                  {item.name}
+                  <Typography textTransform="capitalize">
+                    {item.name}
+                  </Typography>
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
         </Box>
         <Box marginY={3}>
-          <PokeGrid />
+          <PokeGrid searchPokemon={searchPokemon} pokeType={type} />
         </Box>
       </Container>
     </React.Fragment>

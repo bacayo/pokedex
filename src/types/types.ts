@@ -1,7 +1,13 @@
 export interface Pokemon {
   id: number;
   name: string;
-
+  height: number;
+  weight: number;
+  base_experience: number;
+  species: {
+    name: string;
+    url: string;
+  };
   abilities: {
     ability: {
       name: string;
@@ -61,4 +67,35 @@ export interface Pokemon {
 export interface PokemonType {
   name: string;
   url: string;
+}
+
+export interface PokemonSpecies {
+  id: number;
+  name: string;
+  order: number;
+  gender_rate: number;
+  capture_rate: number;
+  growth_rate: {
+    url: string;
+    name: string;
+  };
+  base_happiness: number;
+  is_baby: boolean;
+  is_legendary: boolean;
+  is_mythical: boolean;
+  habitat: {
+    name: string;
+  };
+  flavor_text_entries: {
+    flavor_text: string;
+    language: {
+      name: string;
+    };
+  }[];
+  genera: {
+    genus: string;
+    language: {
+      name: string;
+    };
+  }[];
 }

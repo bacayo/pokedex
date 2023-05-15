@@ -1,88 +1,19 @@
 import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import { useTheme } from "@mui/material/styles";
-import TableRow from "@mui/material/TableRow";
-import { Typography, Box } from "@mui/material";
 import { useAppSelector } from "@/redux/hooks/hooks";
 import Image from "next/image";
 import Link from "next/link";
-
-interface Column {
-  id:
-    | "id"
-    | "name"
-    | "type"
-    | "total"
-    | "hp"
-    | "attack"
-    | "defence"
-    | "spAtk"
-    | "spDef"
-    | "speed";
-  label: string;
-  minWidth?: number;
-  align?: "right";
-  format?: (value: number) => string;
-}
-
-const columns: readonly Column[] = [
-  { id: "id", label: "#", minWidth: 100 },
-  { id: "name", label: "Name", minWidth: 100 },
-  {
-    id: "type",
-    label: "Type",
-    minWidth: 100,
-    align: "right",
-  },
-  {
-    id: "total",
-    label: "Total",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "hp",
-    label: "HP",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "attack",
-    label: "Attack",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "defence",
-    label: "Defence",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "spAtk",
-    label: "Sp.Atk",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "spDef",
-    label: "Sp.Def",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "speed",
-    label: "Speed",
-    minWidth: 170,
-    align: "right",
-  },
-];
+import {
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  Table,
+  Paper,
+  useTheme,
+  Box,
+  Typography,
+  TableRow,
+} from "@mui/material";
 
 const bgcolor = (type: string) => {
   if (type === "grass") {
@@ -124,7 +55,13 @@ const bgcolor = (type: string) => {
   }
 };
 
-export default function StickyHeadTable() {
+const PokeGrid = ({
+  searchPokemon,
+  pokeType,
+}: {
+  searchPokemon: string;
+  pokeType: string;
+}) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -149,7 +86,7 @@ export default function StickyHeadTable() {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>
+            <TableCell align="left">
               <Typography>#</Typography>
             </TableCell>
             <TableCell align="left">
@@ -182,103 +119,215 @@ export default function StickyHeadTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
-            <TableRow
-              hover
-              key={row.name}
-              sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
-                "&.MuiTableRow-root:hover": { backgroundColor: "#fff9e0 " },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                <Box
-                  display={"flex"}
-                  justifyContent={"flex-start"}
-                  alignItems={"center"}
-                  flexDirection={"row"}
+          {rows.map((row, index) => {
+            if (
+              row.types.some((type) => type.type.name === pokeType) &&
+              row.name.includes(searchPokemon.toLowerCase())
+            ) {
+              return (
+                <TableRow
+                  hover
+                  key={row.name}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    "&.MuiTableRow-root:hover": { backgroundColor: "#fff9e0 " },
+                  }}
                 >
-                  <div>
-                    {row.sprites.front_shiny !== null && (
-                      <Image
-                        alt="poke-img"
-                        src={row.sprites.front_shiny}
-                        width={50}
-                        height={50}
-                      />
-                    )}
-                  </div>
-                  <Typography>{index + 1}</Typography>
-                </Box>
-              </TableCell>
-              <TableCell align="left">
-                <Link
-                  style={{ textDecoration: "none" }}
-                  href={`/pokemon/${encodeURIComponent(row.name)}`}
-                >
-                  <Typography
-                    fontWeight="600"
-                    color={theme.palette.info.dark}
-                    textTransform="capitalize"
-                  >
-                    {row.name}
-                  </Typography>
-                </Link>
-              </TableCell>
-              <TableCell align="right">
-                {row.types.map((item) => (
-                  <Box
-                    marginY={1}
-                    display="flex"
-                    justifyContent={"center"}
-                    key={item.type.name}
-                    borderRadius={1}
-                    width={72}
-                    bgcolor={bgcolor(item.type.name)}
-                  >
+                  <TableCell component="th" scope="row">
+                    <Box
+                      display={"flex"}
+                      justifyContent={"flex-start"}
+                      alignItems={"center"}
+                      flexDirection={"row"}
+                    >
+                      <div>
+                        {row.sprites.front_shiny !== null && (
+                          <Image
+                            alt="poke-img"
+                            src={row.sprites.front_shiny}
+                            width={50}
+                            height={50}
+                          />
+                        )}
+                      </div>
+                      <Typography>{index + 1}</Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="left">
                     <Link
                       style={{ textDecoration: "none" }}
-                      href={`/type/${encodeURIComponent(item.type.name)}`}
+                      // href={`/pokemon/${encodeURIComponent(row.name)}`}
+                      href={{
+                        pathname: "/pokemon/[slug]",
+                        query: { slug: row.name },
+                      }}
                     >
-                      <Typography textTransform="uppercase" color="#ebf2e4">
-                        {item.type.name}
+                      <Typography
+                        fontWeight="600"
+                        color={theme.palette.info.dark}
+                        textTransform="capitalize"
+                      >
+                        {row.name}
                       </Typography>
                     </Link>
-                  </Box>
-                ))}
-              </TableCell>
-              <TableCell align="center">
-                <Typography fontWeight={600}>
-                  {row.stats[0].base_stat +
-                    row.stats[1].base_stat +
-                    row.stats[2].base_stat +
-                    row.stats[3].base_stat +
-                    row.stats[4].base_stat +
-                    row.stats[5].base_stat}
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{row.stats[0].base_stat}</Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{row.stats[1].base_stat}</Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{row.stats[2].base_stat}</Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{row.stats[3].base_stat}</Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{row.stats[4].base_stat}</Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{row.stats[5].base_stat}</Typography>
-              </TableCell>
-            </TableRow>
-          ))}
+                  </TableCell>
+                  <TableCell align="right">
+                    {row.types.map((item) => (
+                      <Box
+                        marginY={1}
+                        display="flex"
+                        justifyContent={"center"}
+                        key={item.type.name}
+                        borderRadius={1}
+                        width={72}
+                        bgcolor={bgcolor(item.type.name)}
+                      >
+                        <Link
+                          style={{ textDecoration: "none" }}
+                          href={`/type/${encodeURIComponent(item.type.name)}`}
+                        >
+                          <Typography textTransform="uppercase" color="#ebf2e4">
+                            {item.type.name}
+                          </Typography>
+                        </Link>
+                      </Box>
+                    ))}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography fontWeight={600}>
+                      {row.stats[0].base_stat +
+                        row.stats[1].base_stat +
+                        row.stats[2].base_stat +
+                        row.stats[3].base_stat +
+                        row.stats[4].base_stat +
+                        row.stats[5].base_stat}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[0].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[1].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[2].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[3].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[4].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[5].base_stat}</Typography>
+                  </TableCell>
+                </TableRow>
+              );
+            } else if (
+              pokeType === "All" &&
+              row.name.includes(searchPokemon.toLowerCase())
+            ) {
+              return (
+                <TableRow
+                  hover
+                  key={row.name}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    "&.MuiTableRow-root:hover": { backgroundColor: "#fff9e0 " },
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Box
+                      display={"flex"}
+                      justifyContent={"flex-start"}
+                      alignItems={"center"}
+                      flexDirection={"row"}
+                    >
+                      <div>
+                        {row.sprites.front_shiny !== null && (
+                          <Image
+                            alt="poke-img"
+                            src={row.sprites.front_shiny}
+                            width={50}
+                            height={50}
+                          />
+                        )}
+                      </div>
+                      <Typography>{index + 1}</Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="left">
+                    <Link
+                      style={{ textDecoration: "none" }}
+                      href={`/pokemon/${encodeURIComponent(row.name)}`}
+                    >
+                      <Typography
+                        fontWeight="600"
+                        color={theme.palette.info.dark}
+                        textTransform="capitalize"
+                      >
+                        {row.name}
+                      </Typography>
+                    </Link>
+                  </TableCell>
+                  <TableCell align="right">
+                    {row.types.map((item) => (
+                      <Box
+                        marginY={1}
+                        display="flex"
+                        justifyContent={"center"}
+                        key={item.type.name}
+                        borderRadius={1}
+                        width={72}
+                        bgcolor={bgcolor(item.type.name)}
+                      >
+                        <Link
+                          style={{ textDecoration: "none" }}
+                          href={`/type/${encodeURIComponent(item.type.name)}`}
+                        >
+                          <Typography textTransform="uppercase" color="#ebf2e4">
+                            {item.type.name}
+                          </Typography>
+                        </Link>
+                      </Box>
+                    ))}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography fontWeight={600}>
+                      {row.stats[0].base_stat +
+                        row.stats[1].base_stat +
+                        row.stats[2].base_stat +
+                        row.stats[3].base_stat +
+                        row.stats[4].base_stat +
+                        row.stats[5].base_stat}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[0].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[1].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[2].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[3].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[4].base_stat}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>{row.stats[5].base_stat}</Typography>
+                  </TableCell>
+                </TableRow>
+              );
+            }
+          })}
         </TableBody>
       </Table>
     </TableContainer>
   );
-}
+};
+
+export default PokeGrid;
